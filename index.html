@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-G1QHY62WDW"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-G1QHY62WDW');
+    </script>
+    
+    <title>Webp轉JPG/PNG -免費、快速、安全</title>
+    <meta name="description" content="最安全快速的 WebP 轉檔工具。採用瀏覽器原生技術，圖片不需上傳伺服器即可完成轉檔，完全保護您的隱私。支援 WebP 轉 JPG、PNG，適合設計師與社群小編使用。">
+    <meta name="keywords" content="webp to jpg, webp to png, image converter, batch convert webp, browser-based converter, webp 轉檔, webp 変換, webp 변환">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              tech: {
+                900: '#0a0a0c',
+                800: '#121217',
+                700: '#1c1c24',
+                accent: '#3b82f6'
+              }
+            }
+          }
+        }
+      }
+    </script>
+    
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap');
+      
+      body {
+        font-family: 'Inter', 'Noto Sans TC', 'Noto Sans JP', 'Noto Sans KR', sans-serif;
+        background-color: #0a0a0c;
+        color: #e2e8f0;
+        margin: 0;
+        overflow-x: hidden;
+      }
+      
+      .glass {
+        background: rgba(28, 28, 36, 0.7);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      /* Webkit scrollbar */
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #0a0a0c; }
+      ::-webkit-scrollbar-thumb { background: #1c1c24; border-radius: 4px; }
+      ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+
+      @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes slide-up { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes scale-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+      
+      .animate-fade-in { animation: fade-in 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+      .animate-slide-up { animation: slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+      .animate-scale-in { animation: scale-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+      
+      select { appearance: none; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- Load React and htm from ESM.sh -->
+    <script type="module">
+        import React, { useState, useEffect, useRef } from 'https://esm.sh/react@19.0.0';
+        import ReactDOM from 'https://esm.sh/react-dom@19.0.0/client';
+        import htm from 'https://esm.sh/htm';
+
+        const html = htm.bind(React.createElement);
+
+        const translations = {
+          en: {
+            titlePart1: 'Webp to JPG/PNG',
+            titlePart2: '- Free, Fast, Secure',
+            dropzoneTitle: 'Select WebP Images',
+            dropzoneText: 'Drag & Drop or Click (Up to 5 files)',
+            limitWarning: 'Batch limit: 5 images at once.',
+            convertBtn: 'Process Conversion',
+            downloadAllBtn: 'Download All',
+            clearBtn: 'Clear List',
+            statusIdle: 'Waiting',
+            statusProcessing: 'Converting...',
+            statusDone: 'Completed',
+            seoDescription: 'The most secure and fast WebP conversion tool. Using browser-native technology, images are processed entirely in your browser without uploading to any server, fully protecting your privacy. Supports WebP to JPG and PNG. Perfect for designers and social media managers.',
+            qualityLabel: 'Quality',
+            feature1Title: 'Fast & Local',
+            feature1Desc: 'Processing happens entirely on your machine. Your privacy is guaranteed as no files are ever uploaded to a server.',
+            feature2Title: 'Batch Processing',
+            feature2Desc: 'Convert up to 5 images simultaneously. Optimize your workflow without waiting for individual processing.',
+            feature3Title: 'High Fidelity',
+            feature3Desc: 'Adjustable quality settings for JPEG output and pixel-perfect PNG transparency preservation.',
+            copyright: '© 2025 WebP Morph - Professional Conversion Tool'
+          },
+          zh: {
+            titlePart1: 'Webp轉JPG/PNG',
+            titlePart2: '-免費、快速、安全',
+            dropzoneTitle: '選擇 WebP 圖片',
+            dropzoneText: '拖曳至此或點擊選取（最多 5 張）',
+            limitWarning: '單次限制：最多轉換 5 張圖片。',
+            convertBtn: '開始轉換',
+            downloadAllBtn: '全部下載',
+            clearBtn: '清除列表',
+            statusIdle: '待處理',
+            statusProcessing: '轉換中...',
+            statusDone: '轉換完成',
+            seoDescription: '最安全快速的 WebP 轉檔工具。採用瀏覽器原生技術，圖片不需上傳伺服器即可完成轉檔，完全保護您的隱私。支援 WebP 轉 JPG、PNG，適合設計師與社群小編使用。',
+            qualityLabel: '品質',
+            feature1Title: '極速且本地化',
+            feature1Desc: '所有處理都在您的裝置上完成。絕不將檔案上傳至伺服器，確保隱私安全。',
+            feature2Title: '批量處理',
+            feature2Desc: '同時轉換多達 5 張圖片。優化工作流程，無需逐一等待處理。',
+            feature3Title: '高保真度',
+            feature3Desc: '支援調整 JPEG 輸出的品質，並完美保留 PNG 的透明度細節。',
+            copyright: '© 2025 WebP 幻速轉檔 - 專業圖片轉換工具'
+          },
+          ja: {
+            titlePart1: 'WebpからJPG/PNGへ変換',
+            titlePart2: '- 無料、高速、安全',
+            dropzoneTitle: 'WebP画像を選択',
+            dropzoneText: 'ドラッグ＆ドロップまたはクリック（最大5ファイル）',
+            limitWarning: 'バッチ制限：一度に最大5枚まで。',
+            convertBtn: '変換を開始',
+            downloadAllBtn: 'すべてダウンロード',
+            clearBtn: 'リストをクリア',
+            statusIdle: '待機中',
+            statusProcessing: '変換中...',
+            statusDone: '完了',
+            seoDescription: '最も安全で高速なWebP変換ツール。ブラウザネイティブ技術を採用し、画像をサーバーにアップロードせずに変換できるため、プライバシーを完全に保護します。WebPからJPG、PNGへの変換に対応。デザイナーやSNS運用者に最適です。',
+            qualityLabel: '画質',
+            feature1Title: '高速＆ローカル',
+            feature1Desc: '処理はすべてお使いのデバイス上で行われます。サーバーへのアップロードがないため、プライバシーは完全に守られます。',
+            feature2Title: '一括処理',
+            feature2Desc: '最大5枚の画像を同時に変換可能。個別に待つのを省き、効率を最大化します。',
+            feature3Title: '高品質',
+            feature3Desc: 'JPEG出力の画質設定や、PNGの透明度を維持したピクセルパーフェクトな変換に対応。',
+            copyright: '© 2025 WebP モーフ - プロフェッショナル画像変換ツール'
+          },
+          ko: {
+            titlePart1: 'Webp를 JPG/PNG로 변환',
+            titlePart2: '- 무료, 빠름, 안전',
+            dropzoneTitle: 'WebP 이미지 선택',
+            dropzoneText: '드래그 앤 드롭 또는 클릭 (최대 5개 파일)',
+            limitWarning: '일괄 제한: 한 번에 최대 5개 이미지.',
+            convertBtn: '변환 시작',
+            downloadAllBtn: '전체 다운로드',
+            clearBtn: '목록 지우기',
+            statusIdle: '대기 중',
+            statusProcessing: '변환 중...',
+            statusDone: '완료됨',
+            seoDescription: '가장 안전하고 빠른 WebP 변환 도구입니다. 브라우저 네이티브 기술을 사용하여 이미지를 서버에 업로드하지 않고도 변환이 완료되어 개인정보를 완벽하게 보호합니다. WebP를 JPG, PNG로 변환하며 디자이너와 소셜 미디어 관리자에게 적합합니다.',
+            qualityLabel: '품질',
+            feature1Title: '빠른 로컬 처리',
+            feature1Desc: '모든 처리는 사용자의 기기에서 로컬로 수행됩니다. 서버에 파일이 업로드되지 않아 개인정보가 완벽하게 보호됩니다.',
+            feature2Title: '일괄 처리',
+            feature2Desc: '최대 5개의 이미지를 동시에 변환할 수 있습니다. 개별 처리를 기다릴 필요 없이 작업 흐름을 최적화하세요.',
+            feature3Title: '고정밀 변환',
+            feature3Desc: 'JPEG 출력 품질 조절 및 PNG 투명도 보존을 지원하여 원본의 디테일을 유지합니다.',
+            copyright: '© 2025 WebP 모프 - 프로페셔널 이미지 변환 도구'
+          }
+        };
+
+        const App = () => {
+          const [lang, setLang] = useState('en');
+          const [images, setImages] = useState([]);
+          const [targetFormat, setTargetFormat] = useState('image/jpeg');
+          const [quality, setQuality] = useState(0.9);
+          const fileInputRef = useRef(null);
+
+          // Language Detection
+          useEffect(() => {
+            const browserLang = navigator.language.split('-')[0];
+            if (['zh', 'ja', 'ko'].includes(browserLang)) {
+              setLang(browserLang);
+            }
+          }, []);
+
+          const t = translations[lang];
+
+          // SEO and Title Update
+          useEffect(() => {
+            document.title = `${t.titlePart1} ${t.titlePart2}`;
+            const metaDescription = document.querySelector('meta[name="description"]');
+            if (metaDescription) {
+              metaDescription.setAttribute('content', t.seoDescription);
+            }
+          }, [lang, t]);
+
+          const handleFiles = (files) => {
+            if (!files) return;
+            const currentCount = images.length;
+            const remaining = 5 - currentCount;
+            if (remaining <= 0) return;
+
+            const newFiles = Array.from(files).slice(0, remaining).map(file => ({
+              id: Math.random().toString(36).substr(2, 9),
+              file,
+              previewUrl: URL.createObjectURL(file),
+              status: 'idle'
+            }));
+
+            setImages(prev => [...prev, ...newFiles]);
+          };
+
+          const onFileChange = (e) => {
+            handleFiles(e.target.files);
+            if (e.target) e.target.value = '';
+          };
+
+          const clearImages = () => {
+            images.forEach(img => {
+              URL.revokeObjectURL(img.previewUrl);
+              if (img.resultUrl) URL.revokeObjectURL(img.resultUrl);
+            });
+            setImages([]);
+          };
+
+          const convertImage = async (imgFile) => {
+            return new Promise((resolve) => {
+              const img = new Image();
+              img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) return resolve({ ...imgFile, status: 'error' });
+
+                if (targetFormat === 'image/jpeg') {
+                  ctx.fillStyle = 'white';
+                  ctx.fillRect(0, 0, canvas.width, canvas.height);
+                }
+
+                ctx.drawImage(img, 0, 0);
+                
+                canvas.toBlob((blob) => {
+                  if (blob) {
+                    const url = URL.createObjectURL(blob);
+                    resolve({
+                      ...imgFile,
+                      status: 'done',
+                      resultUrl: url,
+                      resultType: targetFormat
+                    });
+                  } else {
+                    resolve({ ...imgFile, status: 'error' });
+                  }
+                }, targetFormat, quality);
+              };
+              img.onerror = () => resolve({ ...imgFile, status: 'error' });
+              img.src = imgFile.previewUrl;
+            });
+          };
+
+          const handleConvert = async () => {
+            setImages(prev => prev.map(img => img.status === 'done' ? img : { ...img, status: 'processing' }));
+            const results = await Promise.all(images.map(img => 
+              img.status === 'done' ? Promise.resolve(img) : convertImage(img)
+            ));
+            setImages(results);
+          };
+
+          const downloadAll = () => {
+            images.forEach((img) => {
+              if (img.resultUrl) {
+                const link = document.createElement('a');
+                link.href = img.resultUrl;
+                const ext = targetFormat === 'image/jpeg' ? 'jpg' : 'png';
+                link.download = `${img.file.name.replace(/\.[^/.]+$/, "")}.${ext}`;
+                link.click();
+              }
+            });
+          };
+
+          return html`
+            <div class="min-h-screen flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8 bg-tech-900 relative">
+              
+              <!-- Language Switcher -->
+              <div class="absolute top-6 right-6 sm:right-12 z-50 animate-fade-in">
+                <div class="flex items-center space-x-2 bg-tech-800/80 glass px-4 py-2 rounded-xl border border-white/5 shadow-xl">
+                  <svg class="w-4 h-4 text-tech-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                  </svg>
+                  <div class="relative">
+                    <select 
+                      value=${lang} 
+                      onChange=${(e) => setLang(e.target.value)}
+                      class="bg-transparent text-white text-sm font-semibold focus:outline-none cursor-pointer pr-6"
+                    >
+                      <option value="en" class="bg-tech-900">English</option>
+                      <option value="zh" class="bg-tech-900">繁體中文</option>
+                      <option value="ja" class="bg-tech-900">日本語</option>
+                      <option value="ko" class="bg-tech-900">한국어</option>
+                    </select>
+                    <svg class="w-3 h-3 text-gray-500 pointer-events-none absolute right-0 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Header Section -->
+              <header class="w-full max-w-4xl text-center mb-16 animate-fade-in mt-16 sm:mt-10">
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white mb-6 leading-tight">
+                  <span class="bg-gradient-to-br from-blue-400 via-indigo-400 to-purple-500 bg-clip-text text-transparent block sm:inline">
+                    ${t.titlePart1}
+                  </span>
+                  <span class="block text-2xl sm:text-4xl md:text-5xl opacity-90 font-bold mt-2 sm:mt-0">
+                    ${t.titlePart2}
+                  </span>
+                </h1>
+              </header>
+
+              <main class="w-full max-w-4xl space-y-8">
+                
+                <!-- Dropzone Section -->
+                <div onClick=${() => fileInputRef.current?.click()} class="relative group cursor-pointer animate-slide-up">
+                  <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 rounded-3xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
+                  <div class="relative glass rounded-3xl p-12 sm:p-20 text-center border-2 border-dashed border-tech-700 group-hover:border-tech-accent transition-all duration-300">
+                    <input type="file" ref=${fileInputRef} onChange=${onFileChange} accept="image/webp" multiple class="hidden" />
+                    <div class="mb-6 flex justify-center">
+                      <div class="p-5 bg-tech-accent/10 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-14 h-14 text-tech-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                      </div>
+                    </div>
+                    <h2 class="text-2xl font-bold text-white mb-3">${t.dropzoneTitle}</h2>
+                    <p class="text-gray-500 text-lg">${t.dropzoneText}</p>
+                    ${images.length >= 5 ? html`<p class="mt-4 text-orange-400 text-sm font-bold uppercase tracking-wider">${t.limitWarning}</p>` : ''}
+                  </div>
+                </div>
+
+                <!-- Controls Section -->
+                ${images.length > 0 ? html`
+                  <div class="glass rounded-2xl p-6 flex flex-wrap gap-8 items-center justify-between border border-tech-700 animate-fade-in">
+                    <div class="flex flex-wrap items-center gap-8">
+                      <div class="space-y-2">
+                        <label class="text-[10px] text-gray-400 uppercase tracking-widest font-black block">Output Format</label>
+                        <div class="flex bg-tech-800 rounded-xl p-1 border border-white/5">
+                          <button onClick=${() => setTargetFormat('image/jpeg')} class="px-6 py-2 rounded-lg text-sm font-bold transition-all ${targetFormat === 'image/jpeg' ? 'bg-tech-700 text-white shadow-lg ring-1 ring-white/10' : 'text-gray-500 hover:text-gray-300'}">JPG</button>
+                          <button onClick=${() => setTargetFormat('image/png')} class="px-6 py-2 rounded-lg text-sm font-bold transition-all ${targetFormat === 'image/png' ? 'bg-tech-700 text-white shadow-lg ring-1 ring-white/10' : 'text-gray-500 hover:text-gray-300'}">PNG</button>
+                        </div>
+                      </div>
+                      ${targetFormat === 'image/jpeg' ? html`
+                        <div class="space-y-2">
+                          <label class="text-[10px] text-gray-400 uppercase tracking-widest font-black block">${t.qualityLabel}: ${Math.round(quality * 100)}%</label>
+                          <input type="range" min="0.1" max="1" step="0.05" value=${quality} onChange=${(e) => setQuality(parseFloat(e.target.value))} class="w-40 sm:w-48 h-1.5 bg-tech-800 rounded-lg appearance-none cursor-pointer accent-tech-accent border border-white/5" />
+                        </div>
+                      ` : ''}
+                    </div>
+                    <div class="flex items-center space-x-4">
+                      <button onClick=${clearImages} class="px-4 py-2 text-sm font-bold text-gray-500 hover:text-white transition-colors">${t.clearBtn}</button>
+                      <button onClick=${handleConvert} disabled=${images.every(img => img.status === 'done')} class="bg-tech-accent hover:bg-blue-500 disabled:opacity-30 disabled:cursor-not-allowed text-white font-black py-3 px-10 rounded-2xl shadow-xl shadow-blue-500/20 transition-all transform active:scale-95">
+                        ${t.convertBtn}
+                      </button>
+                    </div>
+                  </div>
+                ` : ''}
+
+                <!-- Images List Section -->
+                <div class="grid grid-cols-1 gap-4">
+                  ${images.map(img => html`
+                    <div key=${img.id} class="glass border border-tech-700/50 rounded-2xl p-4 flex items-center space-x-5 animate-scale-in hover:border-tech-accent/40 transition-colors">
+                      <div class="w-16 h-16 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-tech-800 flex-shrink-0 border border-white/10 shadow-lg">
+                        <img src=${img.previewUrl} alt="Preview" class="w-full h-full object-cover" />
+                      </div>
+                      <div class="flex-grow min-w-0">
+                        <h3 class="text-white font-bold truncate text-base mb-1">${img.file.name}</h3>
+                        <p class="text-gray-500 text-xs font-mono uppercase tracking-tighter">${(img.file.size / 1024).toFixed(1)} KB • WebP Source</p>
+                      </div>
+                      <div class="flex items-center space-x-4">
+                        <span class="text-[10px] sm:text-xs px-3 py-1 rounded-full font-black uppercase tracking-widest border ${
+                          img.status === 'idle' ? 'bg-tech-800 text-gray-500 border-white/5' :
+                          img.status === 'processing' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+                          img.status === 'done' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
+                          'bg-red-500/10 text-red-400 border-red-500/20'
+                        }">
+                          ${img.status === 'idle' ? t.statusIdle : img.status === 'processing' ? t.statusProcessing : img.status === 'done' ? t.statusDone : 'Error'}
+                        </span>
+                        ${img.resultUrl ? html`
+                          <a href=${img.resultUrl} download="${img.file.name.replace(/\.[^/.]+$/, "")}.${targetFormat === 'image/jpeg' ? 'jpg' : 'png'}" class="p-3 bg-tech-800 hover:bg-tech-accent rounded-xl text-white transition-all transform hover:scale-110 active:scale-90 border border-white/5 shadow-xl">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                          </a>
+                        ` : ''}
+                      </div>
+                    </div>
+                  `)}
+                </div>
+
+                <!-- Batch Download Section -->
+                ${images.some(img => img.status === 'done') ? html`
+                  <div class="flex justify-center mt-12 animate-fade-in">
+                    <button onClick=${downloadAll} class="group flex items-center space-x-4 bg-white text-tech-900 hover:bg-gray-100 font-black py-5 px-16 rounded-3xl transition-all shadow-2xl shadow-white/5 transform hover:-translate-y-1 active:translate-y-0">
+                      <span class="text-xl">${t.downloadAllBtn}</span>
+                      <svg class="w-7 h-7 transform group-hover:translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                      </svg>
+                    </button>
+                  </div>
+                ` : ''}
+              </main>
+
+              <!-- Features Section -->
+              <footer class="w-full max-w-5xl mt-32 border-t border-tech-700/50 pt-20 pb-32">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-16 text-left mb-24 px-4">
+                  <div class="relative">
+                    <div class="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 mb-8 border border-blue-500/20 shadow-lg shadow-blue-500/5">
+                       <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    </div>
+                    <h4 class="text-white font-black text-xl mb-4">${t.feature1Title}</h4>
+                    <p class="text-gray-500 text-sm leading-relaxed font-medium">${t.feature1Desc}</p>
+                  </div>
+                  <div class="relative">
+                    <div class="w-12 h-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-400 mb-8 border border-indigo-500/20 shadow-lg shadow-indigo-500/5">
+                       <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                    </div>
+                    <h4 class="text-white font-black text-xl mb-4">${t.feature2Title}</h4>
+                    <p class="text-gray-500 text-sm leading-relaxed font-medium">${t.feature2Desc}</p>
+                  </div>
+                  <div class="relative">
+                    <div class="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-400 mb-8 border border-purple-500/20 shadow-lg shadow-purple-500/5">
+                       <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z" /></svg>
+                    </div>
+                    <h4 class="text-white font-black text-xl mb-4">${t.feature3Title}</h4>
+                    <p class="text-gray-500 text-sm leading-relaxed font-medium">${t.feature3Desc}</p>
+                  </div>
+                </div>
+                
+                <div class="text-center space-y-6">
+                  <p class="text-gray-400 text-sm font-black tracking-widest uppercase">${t.copyright}</p>
+                  <div class="max-w-2xl mx-auto">
+                    <p class="text-gray-700 text-xs italic font-medium px-8 leading-loose">${t.seoDescription}</p>
+                  </div>
+                </div>
+              </footer>
+            </div>
+          `;
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(App));
+    </script>
+</body>
+</html>
