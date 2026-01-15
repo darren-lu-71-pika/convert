@@ -14,7 +14,7 @@
     
     <title>Webp轉JPG/PNG -免費、快速、安全</title>
     <meta name="description" content="最安全快速的 WebP 轉檔工具。採用瀏覽器原生技術，圖片不需上傳伺服器即可完成轉檔，完全保護您的隱私。支援 WebP 轉 JPG、PNG，適合設計師與社群小編使用。">
-    <meta name="keywords" content="webp to jpg, webp to png, image converter, batch convert webp, browser-based converter, webp 轉檔, webp 変換, webp 변환">
+    <meta name="keywords" content="webp to jpg, webp to png, image converter, batch convert webp, browser-based converter, webp 轉檔, webp 轉換, webp 변환">
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -81,6 +81,11 @@
 
         const html = htm.bind(React.createElement);
 
+        const navTools = [
+          { id: 'convert', name: { en: 'WebP Converter', zh: 'webp圖片轉檔工具', ja: 'WebP変換', ko: 'WebP 변환' }, url: 'https://convert.how01.com' },
+          { id: 'compress', name: { en: 'Image Compressor', zh: '圖片壓縮工具', ja: '画像圧縮', ko: '이미지 압축' }, url: 'https://compress.how01.com' }
+        ];
+
         const translations = {
           en: {
             titlePart1: 'Webp to JPG/PNG',
@@ -102,7 +107,9 @@
             feature2Desc: 'Convert up to 5 images simultaneously. Optimize your workflow without waiting for individual processing.',
             feature3Title: 'High Fidelity',
             feature3Desc: 'Adjustable quality settings for JPEG output and pixel-perfect PNG transparency preservation.',
-            copyright: '© 2025 WebP Morph - Professional Conversion Tool'
+            copyright: '© 2025 WebP Morph - Professional Conversion Tool',
+            relatedTitle: "More Tools",
+            currentLabel: "Current"
           },
           zh: {
             titlePart1: 'Webp轉JPG/PNG',
@@ -124,7 +131,9 @@
             feature2Desc: '同時轉換多達 5 張圖片。優化工作流程，無需逐一等待處理。',
             feature3Title: '高保真度',
             feature3Desc: '支援調整 JPEG 輸出的品質，並完美保留 PNG 的透明度細節。',
-            copyright: '© 2025 WebP 幻速轉檔 - 專業圖片轉換工具'
+            copyright: '© 2025 WebP 幻速轉檔 - 專業圖片轉換工具',
+            relatedTitle: "更多實用工具",
+            currentLabel: "目前位置"
           },
           ja: {
             titlePart1: 'WebpからJPG/PNGへ変換',
@@ -139,14 +148,16 @@
             statusProcessing: '変換中...',
             statusDone: '完了',
             seoDescription: '最も安全で高速なWebP変換ツール。ブラウザネイティブ技術を採用し、画像をサーバーにアップロードせずに変換できるため、プライバシーを完全に保護します。WebPからJPG、PNGへの変換に対応。デザイナーやSNS運用者に最適です。',
-            qualityLabel: '画質',
+            qualityLabel: '畫質',
             feature1Title: '高速＆ローカル',
             feature1Desc: '処理はすべてお使いのデバイス上で行われます。サーバーへのアップロードがないため、プライバシーは完全に守られます。',
             feature2Title: '一括処理',
             feature2Desc: '最大5枚の画像を同時に変換可能。個別に待つのを省き、効率を最大化します。',
             feature3Title: '高品質',
             feature3Desc: 'JPEG出力の画質設定や、PNGの透明度を維持したピクセルパーフェクトな変換に対応。',
-            copyright: '© 2025 WebP モーフ - プロフェッショナル画像変換ツール'
+            copyright: '© 2025 WebP モーフ - プロフェッショナル画像変換ツール',
+            relatedTitle: "その他のツール",
+            currentLabel: "現在の位置"
           },
           ko: {
             titlePart1: 'Webp를 JPG/PNG로 변환',
@@ -168,7 +179,9 @@
             feature2Desc: '최대 5개의 이미지를 동시에 변환할 수 있습니다. 개별 처리를 기다릴 필요 없이 작업 흐름을 최적화하세요.',
             feature3Title: '고정밀 변환',
             feature3Desc: 'JPEG 출력 품질 조절 및 PNG 투명도 보존을 지원하여 원본의 디테일을 유지합니다.',
-            copyright: '© 2025 WebP 모프 - 프로페셔널 이미지 변환 도구'
+            copyright: '© 2025 WebP 모프 - 프로페셔널 이미지 변환 도구',
+            relatedTitle: "기타 도구",
+            currentLabel: "현재 위치"
           }
         };
 
@@ -281,6 +294,15 @@
                 link.click();
               }
             });
+          };
+
+          const isCurrentPage = (url) => {
+             const currentDomain = window.location.hostname;
+             // Logic to check if we are on the 'convert' domain or 'convert' tool page
+             if (url.includes('convert.how01.com') || (currentDomain.includes('convert'))) {
+                 return true;
+             }
+             return false;
           };
 
           return html`
@@ -412,6 +434,29 @@
                     </button>
                   </div>
                 ` : ''}
+
+                <!-- Related Tools Navigation -->
+                <section class="mt-20 pt-10 animate-fade-in border-t border-tech-700/30">
+                  <h3 class="text-center text-gray-500 text-xs font-black uppercase tracking-[0.2em] mb-8">${t.relatedTitle}</h3>
+                  <div class="flex flex-wrap justify-center gap-6">
+                    ${navTools.map(tool => {
+                      const active = isCurrentPage(tool.url);
+                      return html`
+                        <a 
+                          href=${tool.url} 
+                          key=${tool.id}
+                          class="group relative glass px-10 py-6 rounded-3xl flex items-center space-x-4 transition-all duration-300 border border-white/5 ${active ? 'opacity-50 pointer-events-none' : 'hover:border-tech-accent/40 hover:-translate-y-1 hover:shadow-2xl hover:shadow-tech-accent/10'}"
+                        >
+                          <div class="w-3 h-3 rounded-full ${active ? 'bg-tech-accent shadow-[0_0_10px_rgba(59,130,246,0.8)]' : 'bg-gray-700 group-hover:bg-tech-accent transition-colors'}"></div>
+                          <div class="flex flex-col">
+                            <span class="text-lg sm:text-xl font-black tracking-tight ${active ? 'text-white' : 'text-gray-400 group-hover:text-white'} transition-colors">${tool.name[lang]}</span>
+                            ${active ? html`<span class="text-[10px] font-black uppercase tracking-widest text-tech-accent/80 mt-1">${t.currentLabel}</span>` : ''}
+                          </div>
+                        </a>
+                      `;
+                    })}
+                  </div>
+                </section>
               </main>
 
               <!-- Features Section -->
