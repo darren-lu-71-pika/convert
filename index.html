@@ -148,7 +148,7 @@
             statusProcessing: '変換中...',
             statusDone: '完了',
             seoDescription: '最も安全で高速なWebP変換ツール。ブラウザネイティブ技術を採用し、画像をサーバーにアップロードせずに変換できるため、プライバシーを完全に保護します。WebPからJPG、PNGへの変換に対応。デザイナーやSNS運用者に最適です。',
-            qualityLabel: '畫質',
+            qualityLabel: '画質',
             feature1Title: '高速＆ローカル',
             feature1Desc: '処理はすべてお使いのデバイス上で行われます。サーバーへのアップロードがないため、プライバシーは完全に守られます。',
             feature2Title: '一括処理',
@@ -296,12 +296,21 @@
             });
           };
 
-          const isCurrentPage = (url) => {
-             const currentDomain = window.location.hostname;
-             // Logic to check if we are on the 'convert' domain or 'convert' tool page
-             if (url.includes('convert.how01.com') || (currentDomain.includes('convert'))) {
-                 return true;
+          const isCurrentPage = (tool) => {
+             // Precise detection by hostname
+             const hostname = window.location.hostname;
+             
+             // Check if current hostname matches the tool url's host
+             try {
+                const toolHost = new URL(tool.url).hostname;
+                if (hostname === toolHost) return true;
+             } catch (e) {}
+
+             // Fallback for local testing or current identification
+             if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '') {
+                return tool.id === 'convert'; // Current tool ID
              }
+             
              return false;
           };
 
@@ -437,20 +446,21 @@
 
                 <!-- Related Tools Navigation -->
                 <section class="mt-20 pt-10 animate-fade-in border-t border-tech-700/30">
-                  <h3 class="text-center text-gray-500 text-xs font-black uppercase tracking-[0.2em] mb-8">${t.relatedTitle}</h3>
-                  <div class="flex flex-wrap justify-center gap-6">
+                  <h3 class="text-center text-gray-500 text-xs font-black uppercase tracking-[0.2em] mb-10">${t.relatedTitle}</h3>
+                  <div class="flex flex-wrap justify-center gap-8">
                     ${navTools.map(tool => {
-                      const active = isCurrentPage(tool.url);
+                      const active = isCurrentPage(tool);
                       return html`
                         <a 
                           href=${tool.url} 
                           key=${tool.id}
-                          class="group relative glass px-10 py-6 rounded-3xl flex items-center space-x-4 transition-all duration-300 border border-white/5 ${active ? 'opacity-50 pointer-events-none' : 'hover:border-tech-accent/40 hover:-translate-y-1 hover:shadow-2xl hover:shadow-tech-accent/10'}"
+                          class="group relative glass px-12 py-8 rounded-[2rem] flex items-center space-x-5 transition-all duration-300 border border-white/5 ${active ? 'opacity-40 cursor-default' : 'hover:border-tech-accent/40 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(59,130,246,0.15)] active:scale-95'}"
+                          onClick=${(e) => active && e.preventDefault()}
                         >
-                          <div class="w-3 h-3 rounded-full ${active ? 'bg-tech-accent shadow-[0_0_10px_rgba(59,130,246,0.8)]' : 'bg-gray-700 group-hover:bg-tech-accent transition-colors'}"></div>
+                          <div class="w-4 h-4 rounded-full ${active ? 'bg-tech-accent shadow-[0_0_15px_rgba(59,130,246,0.9)]' : 'bg-tech-700 group-hover:bg-tech-accent transition-all duration-300'}"></div>
                           <div class="flex flex-col">
-                            <span class="text-lg sm:text-xl font-black tracking-tight ${active ? 'text-white' : 'text-gray-400 group-hover:text-white'} transition-colors">${tool.name[lang]}</span>
-                            ${active ? html`<span class="text-[10px] font-black uppercase tracking-widest text-tech-accent/80 mt-1">${t.currentLabel}</span>` : ''}
+                            <span class="text-xl sm:text-2xl font-black tracking-tight ${active ? 'text-white' : 'text-gray-400 group-hover:text-white'} transition-colors leading-none">${tool.name[lang]}</span>
+                            ${active ? html`<span class="text-[11px] font-black uppercase tracking-[0.15em] text-tech-accent/90 mt-2">${t.currentLabel}</span>` : ''}
                           </div>
                         </a>
                       `;
